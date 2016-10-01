@@ -8,3 +8,5 @@ bin/
 obj/
 TestResults/
 Build/
+*.lock.json
+*.user
