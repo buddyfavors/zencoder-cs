@@ -9,25 +9,16 @@ namespace Zencoder
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Reflection;
-    using System.Web;
-    using System.Web.SessionState;
+    using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json;
 
     /// <summary>
     /// Implements <see cref="IHttpHandler"/> for receiving Zencoder notifications.
     /// </summary>
-    public class NotificationHandler : IHttpHandler, IRequiresSessionState
+    public class NotificationHandler// : IHttpHandler, IRequiresSessionState
     {
         private static readonly object locker = new object();
         private static IList<INotificationReceiver> receivers;
-
-        /// <summary>
-        /// Delegate for calling an <see cref="INotificationReceiver"/>'s 
-        /// <see cref="INotificationReceiver.OnReceive(HttpPostNotification)"/> method.
-        /// </summary>
-        /// <param name="notification">The notification object to send.</param>
-        private delegate void AsyncNotify(HttpPostNotification notification);
 
         /// <summary>
         /// Gets a list of current notification receivers.
@@ -43,9 +34,9 @@ namespace Zencoder
                     {
                         receivers = new List<INotificationReceiver>();
 
-                        foreach (string name in ZencoderSettings.Section.Notifications.AllKeys)
+                        foreach (var notification in ZencoderSettings.Section.Notifications)
                         {
-                            receivers.Add(CreateReceiver(ZencoderSettings.Section.Notifications[name].Value));    
+                            receivers.Add(CreateReceiver(notification));
                         }
                     }
 
@@ -76,16 +67,16 @@ namespace Zencoder
         /// Processes the request for the given context.
         /// </summary>
         /// <param name="context">The request context to process.</param>
-        public static void ProcessRequest(HttpContextBase context)
+        public static void ProcessRequest(HttpContext context)
         {
-            if ("POST".Equals(context.Request.HttpMethod, StringComparison.OrdinalIgnoreCase) &&
+            if ("POST".Equals(context.Request.Method, StringComparison.OrdinalIgnoreCase) &&
                 "application/json".Equals(context.Request.ContentType, StringComparison.OrdinalIgnoreCase) &&
-                context.Request.InputStream != null &&
-                context.Request.InputStream.Length > 0)
+                context.Request.Body != null &&
+                context.Request.Body.Length > 0)
             {
                 HttpPostNotification notification;
 
-                using (StreamReader sr = new StreamReader(context.Request.InputStream))
+                using (StreamReader sr = new StreamReader(context.Request.Body))
                 {
                     using (JsonReader jr = new JsonTextReader(sr))
                     {
@@ -99,19 +90,10 @@ namespace Zencoder
                     foreach (INotificationReceiver receiver in Receivers)
                     {
                         // Send the notifications out of band.
-                        new AsyncNotify(receiver.OnReceive).BeginInvoke(notification, null, null);
+                        receiver.OnReceive(notification);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Processes the request for the given context.
-        /// </summary>
-        /// <param name="context">The request context to process.</param>
-        public void ProcessRequest(HttpContext context)
-        {
-            ProcessRequest(new HttpContextWrapper(context));
         }
     }
 }

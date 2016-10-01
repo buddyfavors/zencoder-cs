@@ -6,19 +6,19 @@
 
 namespace Zencoder.Test
 {
-    using System;
     using System.IO;
     using System.Text;
     using System.Threading;
-    using System.Web;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
     using Newtonsoft.Json;
+    using Xunit;
+    using Moq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using Microsoft.AspNetCore.Http;
 
     /// <summary>
     /// Notification tests.
     /// </summary>
-    [TestClass]
     public class NotificationTests
     {
         private const string NotificationJson = @"{""job"":{""state"":""processing"",""id"":1234},""output"":{""label"":""web"",""url"":""http://example.com/file.mp4"",""state"":""processing"",""id"":12345}}";
@@ -27,9 +27,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Initializes the class for testing.
         /// </summary>
-        /// <param name="context">The current test context.</param>
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
+        static NotificationTests()
         {
             NotificationHandler.Receivers.Add(new TestNotificationReceiver());
         }
@@ -37,24 +35,24 @@ namespace Zencoder.Test
         /// <summary>
         /// Notification handler process request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void NotificationHandlerProcessRequest()
         {
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(NotificationJson)))
             {
-                var mockContext = new Mock<HttpContextBase>()
+                var mockContext = new Mock<HttpContext>()
                 {
                     DefaultValue = DefaultValue.Mock
                 };
 
-                var mockRequest = new Mock<HttpRequestBase>()
+                var mockRequest = new Mock<HttpRequest>()
                 {
                     DefaultValue = DefaultValue.Mock
                 };
 
                 mockRequest.Setup(r => r.ContentType).Returns("application/json");
-                mockRequest.Setup(r => r.HttpMethod).Returns("POST");
-                mockRequest.Setup(r => r.InputStream).Returns(stream);
+                mockRequest.Setup(r => r.Method).Returns("POST");
+                mockRequest.Setup(r => r.Body).Returns(stream);
 
                 mockContext.Setup(c => c.Request).Returns(mockRequest.Object);
 
@@ -67,12 +65,12 @@ namespace Zencoder.Test
         /// <summary>
         /// HTTP POST notification from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void NotificationHttpPostNotificationFromJson()
         {
             HttpPostNotification notification = JsonConvert.DeserializeObject<HttpPostNotification>(NotificationJson);
-            Assert.AreEqual(JobState.Processing, notification.Job.State);
-            Assert.AreEqual("http://example.com/file.mp4", notification.Output.Url);
+            Assert.Equal(JobState.Processing, notification.Job.State);
+            Assert.Equal("http://example.com/file.mp4", notification.Output.Url);
         }
 
         #region TestNotificationReceiver Class
@@ -88,9 +86,9 @@ namespace Zencoder.Test
             /// <param name="notification">The notification that was received.</param>
             public void OnReceive(HttpPostNotification notification)
             {
-                Assert.IsNotNull(notification);
-                Assert.AreEqual(1234, notification.Job.Id);
-                Assert.AreEqual("web", notification.Output.Label);
+                Assert.NotNull(notification);
+                Assert.Equal(1234, notification.Job.Id);
+                Assert.Equal("web", notification.Output.Label);
                 receiverHandle.Set();
             }
         }
