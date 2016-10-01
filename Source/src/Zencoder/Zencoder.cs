@@ -8,7 +8,7 @@ namespace Zencoder
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Provides API-wide Zencoder services.
@@ -82,9 +82,9 @@ namespace Zencoder
         /// <param name="termsOfService">A value indicating whether the terms of service are agreed to.</param>
         /// <param name="newsletter">A value indicating whether to subscribe the email address to the newsletter.</param>
         /// <returns>The call response.</returns>
-        public static CreateAccountResponse CreateAccount(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter)
+        public static Task<CreateAccountResponse> CreateAccountAsync(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter)
         {
-            return CreateAccount(email, password, affiliateCode, termsOfService, newsletter, ServiceUrl);
+            return CreateAccountAsync(email, password, affiliateCode, termsOfService, newsletter, ServiceUrl);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Zencoder
         /// <param name="newsletter">A value indicating whether to subscribe the email address to the newsletter.</param>
         /// <param name="baseUrl">The service base URL.</param>
         /// <returns>The call response.</returns>
-        public static CreateAccountResponse CreateAccount(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter, Uri baseUrl)
+        public static Task<CreateAccountResponse> CreateAccountAsync(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter, Uri baseUrl)
         {
             CreateAccountRequest request = new CreateAccountRequest(baseUrl)
             {
@@ -109,7 +109,7 @@ namespace Zencoder
                 TermsOfService = termsOfService
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Zencoder
         /// <param name="termsOfService">A value indicating whether the terms of service are agreed to.</param>
         /// <param name="newsletter">A value indicating whether to subscribe the email address to the newsletter.</param>
         /// <param name="callback">The call response.</param>
-        public static void CreateAccount(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter, Action<CreateAccountResponse> callback)
+        public static void CreateAccountAsync(string email, string password, string affiliateCode, bool? termsOfService, bool? newsletter, Action<CreateAccountResponse> callback)
         {
             CreateAccount(email, password, affiliateCode, termsOfService, newsletter, ServiceUrl, callback);
         }
@@ -155,9 +155,9 @@ namespace Zencoder
         /// A blocking account details request/response cycle.
         /// </summary>
         /// <returns>The call response.</returns>
-        public AccountDetailsResponse AccountDetails()
+        public Task<AccountDetailsResponse> AccountDetailsAsync()
         {
-            return new AccountDetailsRequest(this).GetResponse();
+            return new AccountDetailsRequest(this).GetResponseAsync();
         }
 
         /// <summary>
@@ -174,14 +174,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="enable">A value indicating whether to enable integration mode for the account.</param>
         /// <returns>The call response.</returns>
-        public AccountIntegrationModeResponse AccountIntegrationMode(bool enable)
+        public Task<AccountIntegrationModeResponse> AccountIntegrationModeAsync(bool enable)
         {
             AccountIntegrationModeRequest request = new AccountIntegrationModeRequest(this)
             {
                 Enable = enable
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -204,14 +204,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="jobId">The ID of the job to cancel.</param>
         /// <returns>The call response.</returns>
-        public CancelJobResponse CancelJob(int jobId)
+        public Task<CancelJobResponse> CancelJobAsync(int jobId)
         {
             CancelJobRequest request = new CancelJobRequest(this)
             {
                 JobId = jobId
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace Zencoder
         /// <param name="input">The URL of the input file.</param>
         /// <param name="outputs">The output definition collection.</param>
         /// <returns>The call response.</returns>
-        public CreateJobResponse CreateJob(string input, IEnumerable<Output> outputs)
+        public Task<CreateJobResponse> CreateJobAsync(string input, IEnumerable<Output> outputs)
         {
-            return this.CreateJob(input, outputs, null, null, null, null);
+            return CreateJobAsync(input, outputs, null, null, null, null);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Zencoder
         /// <param name="test">A value indicating whether to use test mode.</param>
         /// <param name="mock">A value indicating whether to mock the response rather than actually creating a job.</param>
         /// <returns>The call response.</returns>
-        public CreateJobResponse CreateJob(string input, IEnumerable<Output> outputs, int? downloadConnections, string region, bool? test, bool? mock)
+        public Task<CreateJobResponse> CreateJobAsync(string input, IEnumerable<Output> outputs, int? downloadConnections, string region, bool? test, bool? mock)
         {
             CreateJobRequest request = new CreateJobRequest(this)
             {
@@ -272,7 +272,7 @@ namespace Zencoder
                 Test = test
             };
 
-            return request.WithOutputs(outputs).GetResponse();
+            return request.WithOutputs(outputs).GetResponseAsync();
         }
 
         /// <summary>
@@ -304,14 +304,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="jobId">The ID of the job to delete.</param>
         /// <returns>The call response.</returns>
-        public DeleteJobResponse DeleteJob(int jobId)
+        public Task<DeleteJobResponse> DeleteJobAsync(int jobId)
         {
             DeleteJobRequest request = new DeleteJobRequest(this)
             {
                 JobId = jobId
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -334,14 +334,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="jobId">The ID of the job to get details for.</param>
         /// <returns>The call response.</returns>
-        public JobDetailsResponse JobDetails(int jobId)
+        public Task<JobDetailsResponse> JobDetailsAsync(int jobId)
         {
             JobDetailsRequest request = new JobDetailsRequest(this)
             {
                 JobId = jobId
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -364,14 +364,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="outputId">The ID of the output (NOT the job ID) to get progress for.</param>
         /// <returns>The call response.</returns>
-        public JobProgressResponse JobProgress(int outputId)
+        public Task<JobProgressResponse> JobProgressAsync(int outputId)
         {
             JobProgressRequest request = new JobProgressRequest(this)
             {
                 OutputId = outputId
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -393,9 +393,9 @@ namespace Zencoder
         /// A blocking list jobs request/response cycle.
         /// </summary>
         /// <returns>The call response.</returns>
-        public ListJobsResponse ListJobs()
+        public Task<ListJobsResponse> ListJobsAsync()
         {
-            return this.ListJobs(null, null);
+            return ListJobsAsync(null, null);
         }
 
         /// <summary>
@@ -413,10 +413,10 @@ namespace Zencoder
         /// <param name="pageNumber">The page number of jobs to list, if applicable.</param>
         /// <param name="pageSize">The page size of jobs to list, if applicable.</param>
         /// <returns>The call response.</returns>
-        public ListJobsResponse ListJobs(int? pageNumber, int? pageSize)
+        public Task<ListJobsResponse> ListJobsAsync(int? pageNumber, int? pageSize)
         {
             ListJobsRequest request = new ListJobsRequest(this).ForPage(pageNumber, pageSize);
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
@@ -436,14 +436,14 @@ namespace Zencoder
         /// </summary>
         /// <param name="jobId">The ID of the job to resubmit.</param>
         /// <returns>The call response.</returns>
-        public ResubmitJobResponse ResubmitJob(int jobId)
+        public Task<ResubmitJobResponse> ResubmitJobAsync(int jobId)
         {
             ResubmitJobRequest request = new ResubmitJobRequest(this)
             {
                 JobId = jobId
             };
 
-            return request.GetResponse();
+            return request.GetResponseAsync();
         }
 
         /// <summary>
