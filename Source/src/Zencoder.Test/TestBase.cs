@@ -6,14 +6,9 @@
 
 namespace Zencoder.Test
 {
-    using System;
-    using System.Configuration;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-
     /// <summary>
     /// Base class for tests.
     /// </summary>
-    [TestClass]
     public abstract class TestBase
     {
         /// <summary>
