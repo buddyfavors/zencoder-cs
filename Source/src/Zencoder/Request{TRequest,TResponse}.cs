@@ -12,6 +12,7 @@ namespace Zencoder
     using System.Reflection;
     using System.Text;
     using Newtonsoft.Json;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Base generic implementation of <see cref="Request"/>.
@@ -48,7 +49,7 @@ namespace Zencoder
         /// Gets the response to this request.
         /// </summary>
         /// <returns>The response to this request.</returns>
-        public virtual TResponse GetResponse()
+        public virtual async Task<TResponse> GetResponseAsync()
         {
             if (this.response == null)
             {
@@ -61,18 +62,26 @@ namespace Zencoder
 
                     if ("POST".Equals(this.Verb, StringComparison.OrdinalIgnoreCase))
                     {
-                        using (Stream stream = request.GetRequestStream())
+                        using (Stream stream = await request.GetRequestStreamAsync())
                         {
                             this.WriteRequestStream(stream);
                         }
                     }
 
-                    response = (HttpWebResponse)request.GetResponse();
+                    response = (HttpWebResponse)await request.GetResponseAsync();
                 }
                 catch (WebException ex)
                 {
                     requestException = ex;
                     response = (HttpWebResponse)ex.Response;
+                }
+                catch (Exception ex)
+                {
+                    if (!(ex.InnerException is WebException))
+                        throw;
+
+                    requestException = ex.InnerException as WebException;
+                    response = (HttpWebResponse)requestException.Response;
                 }
 
                 this.response = this.CreateResponse(response, requestException);
