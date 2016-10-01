@@ -1,0 +1,6 @@
+﻿{
+  "zencoder": {
+    /* Get your API key from http://zencoder.com/ */
+    "apiKey": ""
+  }
+}
