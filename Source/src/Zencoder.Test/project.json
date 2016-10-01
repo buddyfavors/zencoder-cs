@@ -8,7 +8,9 @@
     "System.Runtime.Serialization.Primitives": "4.1.1",
     "xunit": "2.1.0",
     "dotnet-test-xunit": "1.0.0-rc2-192208-24",
-    "Zencoder": "1.0.0-*"
+    "Zencoder": "1.0.0-*",
+    "Moq": "4.6.38-alpha",
+    "Microsoft.AspNetCore.Http.Abstractions": "1.0.0"
   },
   "testRunner": "xunit",
   "frameworks": {
