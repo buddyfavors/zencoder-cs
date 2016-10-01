@@ -255,18 +255,18 @@ namespace Zencoder.Test
         /// Cancel job request tests.
         /// </summary>
         [Fact]
-        public void JobCancelJobRequest()
+        public async void JobCancelJobRequest()
         {
-            CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
+            CreateJobResponse createResponse = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", null, null, null, true, false);
             Assert.True(createResponse.Success);
 
-            CancelJobResponse cancelResponse = Zencoder.CancelJob(createResponse.Id);
+            CancelJobResponse cancelResponse = await Zencoder.CancelJobAsync(createResponse.Id);
             Assert.True(cancelResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.CancelJob(
-                createResponse.Id, 
+                createResponse.Id,
                 r =>
                 {
                     Assert.True(r.InConflict);
@@ -280,7 +280,7 @@ namespace Zencoder.Test
         /// Create job request tests.
         /// </summary>
         [Fact]
-        public void JobCreateJobRequest()
+        public async void JobCreateJobRequest()
         {
             Output[] outputs = new Output[]
             {
@@ -291,7 +291,7 @@ namespace Zencoder.Test
                     Width = 480,
                     Height = 320
                 },
-                new Output() 
+                new Output()
                 {
                     Label = "WebHD",
                     Url = "s3://output-bucket/output-file-2-name.mp4",
@@ -300,10 +300,10 @@ namespace Zencoder.Test
                 }
             };
 
-            CreateJobResponse response = Zencoder.CreateJob("s3://bucket-name/file-name.avi", outputs, null, null, true, true);
+            CreateJobResponse response = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", outputs, null, null, true, true);
             Assert.True(response.Success);
             Assert.Equal(outputs.Count(), response.Outputs.Count());
-            
+
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.CreateJob(
@@ -365,21 +365,21 @@ namespace Zencoder.Test
         /// Delete job request tests.
         /// </summary>
         [Fact]
-        public void JobDeleteJobRequest()
+        public async void JobDeleteJobRequest()
         {
-            CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
+            CreateJobResponse createResponse = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", null, null, null, true, false);
             Assert.True(createResponse.Success);
 
             // TODO: Investigate whether Zencoder has truly deprecated this API operation.
             // For now, just test for an InConflict status, because that's what it seems
             // we should expect.
-            DeleteJobResponse deleteResponse = Zencoder.DeleteJob(createResponse.Id);
+            DeleteJobResponse deleteResponse = await Zencoder.DeleteJobAsync(createResponse.Id);
             Assert.True(deleteResponse.InConflict);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.DeleteJob(
-                createResponse.Id, 
+                createResponse.Id,
                 r =>
                 {
                     Assert.True(r.InConflict);
@@ -437,18 +437,18 @@ namespace Zencoder.Test
         /// Job details request tests.
         /// </summary>
         [Fact]
-        public void JobJobDetailsRequest()
+        public async void JobJobDetailsRequest()
         {
-            CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
+            CreateJobResponse createResponse = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", null, null, null, true, false);
             Assert.True(createResponse.Success);
 
-            JobDetailsResponse detailsResponse = Zencoder.JobDetails(createResponse.Id);
+            JobDetailsResponse detailsResponse = await Zencoder.JobDetailsAsync(createResponse.Id);
             Assert.True(detailsResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.JobDetails(
-                createResponse.Id, 
+                createResponse.Id,
                 r =>
                 {
                     Assert.True(r.Success);
@@ -462,7 +462,7 @@ namespace Zencoder.Test
         /// Job progress request tests.
         /// </summary>
         [Fact]
-        public void JobJobProgressRequest()
+        public async void JobJobProgressRequest()
         {
             Output output = new Output()
             {
@@ -472,10 +472,10 @@ namespace Zencoder.Test
                 Height = 320
             };
 
-            CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", new Output[] { output });
+            CreateJobResponse createResponse = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", new Output[] { output });
             Assert.True(createResponse.Success);
 
-            JobProgressResponse progressResponse = Zencoder.JobProgress(createResponse.Outputs.First().Id);
+            JobProgressResponse progressResponse = await Zencoder.JobProgressAsync(createResponse.Outputs.First().Id);
             Assert.True(progressResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
@@ -507,9 +507,9 @@ namespace Zencoder.Test
         /// List jobs request tests.
         /// </summary>
         [Fact]
-        public void JobListJobsRequest()
+        public async void JobListJobsRequest()
         {
-            ListJobsResponse response = Zencoder.ListJobs();
+            ListJobsResponse response = await Zencoder.ListJobsAsync();
             Assert.True(response.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
@@ -590,10 +590,10 @@ namespace Zencoder.Test
                 "asia",
                 true,
                 false,
-                r =>
+                async r =>
                 {
                     Assert.True(r.Success);
-                    Assert.True(Zencoder.JobDetails(r.Id).Success);
+                    Assert.True((await Zencoder.JobDetailsAsync(r.Id)).Success);
                     handles[1].Set();
                 });
 
@@ -604,18 +604,18 @@ namespace Zencoder.Test
         /// Resubmit job request tests.
         /// </summary>
         [Fact]
-        public void JobResubmitJobRequest()
+        public async void JobResubmitJobRequest()
         {
-            CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
+            CreateJobResponse createResponse = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", null, null, null, true, false);
             Assert.True(createResponse.Success);
 
-            ResubmitJobResponse resubmitResponse = Zencoder.ResubmitJob(createResponse.Id);
+            ResubmitJobResponse resubmitResponse = await Zencoder.ResubmitJobAsync(createResponse.Id);
             Assert.True(resubmitResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.ResubmitJob(
-                createResponse.Id, 
+                createResponse.Id,
                 r =>
                 {
                     Assert.True(r.Success);

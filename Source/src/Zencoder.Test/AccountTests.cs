@@ -19,9 +19,9 @@ namespace Zencoder.Test
         /// Account details request tests.
         /// </summary>
         [Fact]
-        public void AccountAccountDetailsRequest()
+        public async void AccountAccountDetailsRequest()
         {
-            AccountDetailsResponse response = Zencoder.AccountDetails();
+            AccountDetailsResponse response = await Zencoder.AccountDetailsAsync();
             Assert.True(response.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
@@ -51,15 +51,15 @@ namespace Zencoder.Test
         /// Account integration mode request tests.
         /// </summary>
         [Fact]
-        public void AccountAccountIntegrationModeRequest()
+        public async void AccountAccountIntegrationModeRequest()
         {
-            AccountIntegrationModeResponse response = Zencoder.AccountIntegrationMode(true);
+            AccountIntegrationModeResponse response = await Zencoder.AccountIntegrationModeAsync(true);
             Assert.True(response.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.AccountIntegrationMode(
-                true, 
+                true,
                 r =>
                 {
                     Assert.True(r.Success);
@@ -73,19 +73,19 @@ namespace Zencoder.Test
         /// Create account request tests.
         /// </summary>
         [Fact]
-        public void AccountCreateAccountRequest()
+        public async void AccountCreateAccountRequest()
         {
-            CreateAccountResponse response = Zencoder.CreateAccount(Guid.NewGuid().ToString() + "@tastycodes.com", Guid.NewGuid().ToString(), null, true, false);
+            CreateAccountResponse response = await Zencoder.CreateAccountAsync(Guid.NewGuid().ToString() + "@tastycodes.com", Guid.NewGuid().ToString(), null, true, false);
             Assert.True(response.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
-            Zencoder.CreateAccount(
-                Guid.NewGuid().ToString() + "@tastycodes.com", 
-                Guid.NewGuid().ToString(), 
-                null, 
-                true, 
-                false, 
+            Zencoder.CreateAccountAsync(
+                Guid.NewGuid().ToString() + "@tastycodes.com",
+                Guid.NewGuid().ToString(),
+                null,
+                true,
+                false,
                 r =>
                 {
                     Assert.True(r.Success);

@@ -53,7 +53,7 @@ namespace Zencoder.Test
         /// Output H264 create job tests.
         /// </summary>
         [Fact]
-        public void OutputH264CreateJob()
+        public async void OutputH264CreateJob()
         {
             Output output = new Output()
             {
@@ -63,7 +63,7 @@ namespace Zencoder.Test
                 Tuning = Tuning.FastDecode
             };
 
-            CreateJobResponse response = Zencoder.CreateJob("s3://bucket-name/file-name.avi", new Output[] { output });
+            CreateJobResponse response = await Zencoder.CreateJobAsync("s3://bucket-name/file-name.avi", new Output[] { output });
             Assert.True(response.Success);
         }
 
