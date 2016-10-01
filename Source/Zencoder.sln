@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Zencoder", "src\Zencoder\Zencoder.xproj", "{991DE4BF-FB31-481A-8FDF-F6FC5C3BB77B}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Zencoder.Test", "src\Zencoder.Test\Zencoder.Test.xproj", "{17D6C34C-19DB-496A-99DC-93CA97461BDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{991DE4BF-FB31-481A-8FDF-F6FC5C3BB77B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{991DE4BF-FB31-481A-8FDF-F6FC5C3BB77B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{991DE4BF-FB31-481A-8FDF-F6FC5C3BB77B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17D6C34C-19DB-496A-99DC-93CA97461BDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17D6C34C-19DB-496A-99DC-93CA97461BDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17D6C34C-19DB-496A-99DC-93CA97461BDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17D6C34C-19DB-496A-99DC-93CA97461BDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
