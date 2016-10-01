@@ -6,51 +6,44 @@
 
 namespace Zencoder
 {
-    using System;
-    using System.Configuration;
+    using Microsoft.Extensions.Configuration;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// Implements <see cref="ConfigurationSection"/> for the Zencoder configuration settings.
+    /// Zencoder configuration settings.
     /// </summary>
-    public class ZencoderSettings : ConfigurationSection
+    public class ZencoderSettings
     {
-        private static ZencoderSettings settings = (ZencoderSettings)(ConfigurationManager.GetSection("zencoder") ?? new ZencoderSettings());
+        private static ZencoderSettings s_settings = new ZencoderSettings();
+        private readonly IConfigurationRoot m_ConfigurationRoot = null;
+
+        public ZencoderSettings()
+        {
+            m_ConfigurationRoot = new ConfigurationBuilder()
+                .AddJsonFile("config.json")
+                .Build();
+        }
 
         /// <summary>
-        /// Gets the configuration section from the current configuration.
+        /// Gets current configuration.
         /// </summary>
         public static ZencoderSettings Section
         {
-            get { return settings; }
+            get { return s_settings; }
         }
 
         /// <summary>
-        /// Gets or sets the default API to use.
+        /// Gets the default API to use.
         /// </summary>
-        [ConfigurationProperty("apiKey", IsRequired = false)]
-        public string ApiKey
-        {
-            get { return (string)this["apiKey"]; }
-            set { this["apiKey"] = value; }
-        }
+        public string ApiKey => m_ConfigurationRoot.GetValue<string>("zencoder:apiKey");
 
         /// <summary>
         /// Gets a collection of named types that implement <see cref="INotificationReceiver"/> that should be 
         /// notifiied when a notification is received.
         /// </summary>
-        [ConfigurationProperty("notifications")]
-        public NameValueConfigurationCollection Notifications
+        public IEnumerable<string> Notifications
         {
-            get { return (NameValueConfigurationCollection)(this["notifications"] ?? (this["notifications"] = new NameValueConfigurationCollection())); }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this ConfigurationSection is read only.
-        /// </summary>
-        /// <returns>True if the section is read only, false otherwise.</returns>
-        public override bool IsReadOnly()
-        {
-            return false;
+            get { return m_ConfigurationRoot.GetValue<IEnumerable<string>>("zencoder:notifications") ?? new string[0]; }
         }
     }
 }
