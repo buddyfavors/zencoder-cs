@@ -7,7 +7,7 @@
 namespace Zencoder
 {
     using System;
-    using System.Web;
+    using System.Net;
 
     /// <summary>
     /// Provides exteions to <see cref="Uri"/> objects.
@@ -107,9 +107,9 @@ namespace Zencoder
             UriBuilder builder = new UriBuilder(uri);
 
             builder.Query = string.Concat(
-                HttpUtility.UrlEncode(key),
+                WebUtility.UrlEncode(key),
                 "=",
-                HttpUtility.UrlEncode(value));
+                WebUtility.UrlEncode(value));
 
             return builder.Uri;
         }

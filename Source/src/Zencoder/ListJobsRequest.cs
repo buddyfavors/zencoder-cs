@@ -8,9 +8,8 @@ namespace Zencoder
 {
     using System;
     using System.Globalization;
-    using System.IO;
-    using System.Web;
     using Newtonsoft.Json;
+    using System.Net;
 
     /// <summary>
     /// Implements the list jobs request.
@@ -102,7 +101,7 @@ namespace Zencoder
                     string query = string.Format(
                         CultureInfo.InvariantCulture,
                         "{0}={1}&page={2}&per_page={3}",
-                        HttpUtility.UrlEncode(Zencoder.ApiKeyQueryKey),
+                        WebUtility.UrlEncode(Zencoder.ApiKeyQueryKey),
                         ApiKey,
                         this.PageNumber,
                         this.PageSize);

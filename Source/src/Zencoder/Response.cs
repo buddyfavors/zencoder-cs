@@ -115,11 +115,11 @@ namespace Zencoder
         {
             MethodInfo method = null;
             Type type = typeof(TResponse);
-            TAttr attr = type.GetCustomAttributes(typeof(TAttr), true).Cast<TAttr>().FirstOrDefault();
+            TAttr attr = type.GetTypeInfo().GetCustomAttributes(typeof(TAttr), true).Cast<TAttr>().FirstOrDefault();
 
             if (attr != null && !string.IsNullOrEmpty(attr.Method) && attr.Type != null)
             {
-                method = attr.Type.GetMethod(attr.Method, new Type[] { argumentType });
+                method = attr.Type.GetTypeInfo().GetMethod(attr.Method, new Type[] { argumentType });
 
                 if (method != null && !method.IsStatic)
                 {

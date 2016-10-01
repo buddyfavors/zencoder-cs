@@ -10,6 +10,7 @@ namespace Zencoder
     using System.Globalization;
     using System.Text.RegularExpressions;
     using Newtonsoft.Json;
+    using System.Reflection;
 
     /// <summary>
     /// Provides custom JSON serialization to allow any combination of "true", "false", "1" or "0" to be used for booleans.
@@ -25,7 +26,7 @@ namespace Zencoder
         /// <returns>True if this instance can convert the specified object type, otherwise false.</returns>
         public override bool CanConvert(Type objectType)
         {
-            return typeof(bool?).IsAssignableFrom(objectType);
+            return typeof(bool?).GetTypeInfo().IsAssignableFrom(objectType);
         }
 
         /// <summary>

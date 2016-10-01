@@ -10,6 +10,7 @@ namespace Zencoder
     using System.Globalization;
     using System.Text.RegularExpressions;
     using Newtonsoft.Json;
+    using System.Reflection;
 
     /// <summary>
     /// Provides custom JSON serialization for enums to/from integers.
@@ -23,7 +24,7 @@ namespace Zencoder
         /// <returns>True if this instance can convert the specified object type, otherwise false.</returns>
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsEnum || objectType.IsNullableEnum();
+            return objectType.GetTypeInfo().IsEnum || objectType.IsNullableEnum();
         }
 
         /// <summary>

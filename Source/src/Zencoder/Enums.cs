@@ -39,18 +39,18 @@ namespace Zencoder
         {
             bool isNullable = false;
 
-            if (!enumType.IsEnum)
+            if (!enumType.GetTypeInfo().IsEnum)
             {
                 enumType = Nullable.GetUnderlyingType(enumType);
                 isNullable = true;
 
-                if (!enumType.IsEnum)
+                if (!enumType.GetTypeInfo().IsEnum)
                 {
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, @"Type ""{0}"" is not a valid enumeration.", enumType), "enumType");
                 }
             }
 
-            MemberInfo[] members = enumType.GetMembers();
+            MemberInfo[] members = enumType.GetTypeInfo().GetMembers();
 
             if (!string.IsNullOrEmpty(value))
             {
@@ -88,7 +88,7 @@ namespace Zencoder
         public static bool IsNullableEnum(this Type objectType)
         {
             Type ut = Nullable.GetUnderlyingType(objectType);
-            return ut != null && ut.IsEnum;
+            return ut != null && ut.GetTypeInfo().IsEnum;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Zencoder
             string text = value.ToString();
             Type type = value.GetType();
 
-            if (type.GetCustomAttributes(typeof(FlagsAttribute), false).Count() > 0)
+            if (type.GetTypeInfo().GetCustomAttributes(typeof(FlagsAttribute), false).Count() > 0)
             {
                 List<string> descriptions = new List<string>();
                 int valueInt = Convert.ToInt32(value, CultureInfo.InvariantCulture);
@@ -113,7 +113,7 @@ namespace Zencoder
 
                     if ((val & valueInt) == val)
                     {
-                        MemberInfo info = type.GetMember(name).FirstOrDefault();
+                        MemberInfo info = type.GetTypeInfo().GetMember(name).FirstOrDefault();
 
                         if (info != null)
                         {
@@ -139,7 +139,7 @@ namespace Zencoder
             }
             else
             {
-                MemberInfo info = type.GetMember(text).FirstOrDefault();
+                MemberInfo info = type.GetTypeInfo().GetMember(text).FirstOrDefault();
 
                 if (info != null)
                 {
