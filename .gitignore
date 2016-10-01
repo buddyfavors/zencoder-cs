@@ -10,3 +10,4 @@ TestResults/
 Build/
 *.lock.json
 *.user
+.vs
