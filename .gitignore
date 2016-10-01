@@ -2,7 +2,7 @@
 *.csproj.user
 *.snk
 *.vsmdi
-App.config
+config.json
 StyleCop.Cache
 bin/
 obj/
