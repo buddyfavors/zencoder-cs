@@ -9,14 +9,12 @@ namespace Zencoder.Test
     using System;
     using System.Globalization;
     using System.Linq;
-    using System.Net;
     using System.Threading;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Xunit;
 
     /// <summary>
     /// Job tests.
     /// </summary>
-    [TestClass]
     public class JobTests : TestBase
     {
         #region Jobs Response JSON
@@ -256,14 +254,14 @@ namespace Zencoder.Test
         /// <summary>
         /// Cancel job request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobCancelJobRequest()
         {
             CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
-            Assert.IsTrue(createResponse.Success);
+            Assert.True(createResponse.Success);
 
             CancelJobResponse cancelResponse = Zencoder.CancelJob(createResponse.Id);
-            Assert.IsTrue(cancelResponse.Success);
+            Assert.True(cancelResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -271,7 +269,7 @@ namespace Zencoder.Test
                 createResponse.Id, 
                 r =>
                 {
-                    Assert.IsTrue(r.InConflict);
+                    Assert.True(r.InConflict);
                     handles[0].Set();
                 });
 
@@ -281,7 +279,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Create job request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobCreateJobRequest()
         {
             Output[] outputs = new Output[]
@@ -303,8 +301,8 @@ namespace Zencoder.Test
             };
 
             CreateJobResponse response = Zencoder.CreateJob("s3://bucket-name/file-name.avi", outputs, null, null, true, true);
-            Assert.IsTrue(response.Success);
-            Assert.AreEqual(outputs.Count(), response.Outputs.Count());
+            Assert.True(response.Success);
+            Assert.Equal(outputs.Count(), response.Outputs.Count());
             
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -317,8 +315,8 @@ namespace Zencoder.Test
                 true,
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
-                    Assert.IsTrue(r.Outputs.Count() > 0);
+                    Assert.True(r.Success);
+                    Assert.True(r.Outputs.Count() > 0);
                     handles[0].Set();
                 });
 
@@ -328,7 +326,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Create job request to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobCreateJobRequestToJson()
         {
             const string One = @"{{""input"":""s3://bucket-name/file-name.avi"",""api_key"":""{0}""}}";
@@ -339,7 +337,7 @@ namespace Zencoder.Test
                 Input = "s3://bucket-name/file-name.avi"
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
 
             request = new CreateJobRequest(Zencoder)
             {
@@ -348,35 +346,35 @@ namespace Zencoder.Test
                 Region = "asia"
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, Two, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, Two, ApiKey), request.ToJson());
         }
 
         /// <summary>
         /// Create job response from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobCreateJobResponseFromJson()
         {
             CreateJobResponse response = CreateJobResponse.FromJson(@"{""id"":""1234"",""outputs"":[{""id"":""4321""}]}");
-            Assert.AreEqual(1234, response.Id);
-            Assert.AreEqual(1, response.Outputs.Length);
-            Assert.AreEqual(4321, response.Outputs.First().Id);
+            Assert.Equal(1234, response.Id);
+            Assert.Equal(1, response.Outputs.Length);
+            Assert.Equal(4321, response.Outputs.First().Id);
         }
 
         /// <summary>
         /// Delete job request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobDeleteJobRequest()
         {
             CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
-            Assert.IsTrue(createResponse.Success);
+            Assert.True(createResponse.Success);
 
             // TODO: Investigate whether Zencoder has truly deprecated this API operation.
             // For now, just test for an InConflict status, because that's what it seems
             // we should expect.
             DeleteJobResponse deleteResponse = Zencoder.DeleteJob(createResponse.Id);
-            Assert.IsTrue(deleteResponse.InConflict);
+            Assert.True(deleteResponse.InConflict);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -384,7 +382,7 @@ namespace Zencoder.Test
                 createResponse.Id, 
                 r =>
                 {
-                    Assert.IsTrue(r.InConflict);
+                    Assert.True(r.InConflict);
                     handles[0].Set();
                 });
 
@@ -394,58 +392,58 @@ namespace Zencoder.Test
         /// <summary>
         /// Job details from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobJobDetailsFromJson()
         {
             JobDetailsResponse response = JobDetailsResponse.FromJson(JobDetailsResponseJson);
-            Assert.AreEqual(new DateTime(2010, 1, 1), response.Job.FinishedAt);
-            Assert.AreEqual(1, response.Job.Id);
-            Assert.AreEqual(JobState.Finished, response.Job.State);
+            Assert.Equal(new DateTime(2010, 1, 1), response.Job.FinishedAt);
+            Assert.Equal(1, response.Job.Id);
+            Assert.Equal(JobState.Finished, response.Job.State);
 
-            Assert.AreEqual("mpeg4", response.Job.InputMediaFile.Format);
-            Assert.AreEqual(24883, response.Job.InputMediaFile.DurationInMiliseconds);
-            Assert.AreEqual(2, response.Job.InputMediaFile.Channels);
-            Assert.AreEqual("h264", response.Job.InputMediaFile.VideoCodec);
-            Assert.AreEqual(1, response.Job.OutputMediaFiles.Length);
+            Assert.Equal("mpeg4", response.Job.InputMediaFile.Format);
+            Assert.Equal(24883, response.Job.InputMediaFile.DurationInMiliseconds);
+            Assert.Equal(2, response.Job.InputMediaFile.Channels);
+            Assert.Equal("h264", response.Job.InputMediaFile.VideoCodec);
+            Assert.Equal(1, response.Job.OutputMediaFiles.Length);
         }
 
         /// <summary>
         /// Job details from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobJobDetailsTestSetTwoFromJson()
         {
             JobDetailsResponse response = JobDetailsResponse.FromJson(JobDetailsResponseTestSetTwoJson);
-            Assert.AreEqual(new DateTimeOffset(2011, 4, 4, 11, 22, 16, TimeSpan.FromHours(-5)).ToUniversalTime(), response.Job.FinishedAt.Value.ToUniversalTime());
-            Assert.AreEqual(1, response.Job.Id);
-            Assert.AreEqual(JobState.Finished, response.Job.State);
+            Assert.Equal(new DateTimeOffset(2011, 4, 4, 11, 22, 16, TimeSpan.FromHours(-5)).ToUniversalTime(), response.Job.FinishedAt.Value.ToUniversalTime());
+            Assert.Equal(1, response.Job.Id);
+            Assert.Equal(JobState.Finished, response.Job.State);
 
-            Assert.AreEqual("mpeg4", response.Job.InputMediaFile.Format);
-            Assert.AreEqual(122000, response.Job.InputMediaFile.DurationInMiliseconds);
-            Assert.AreEqual(2, response.Job.InputMediaFile.Channels);
-            Assert.AreEqual("h264", response.Job.InputMediaFile.VideoCodec);
-            Assert.AreEqual(1, response.Job.OutputMediaFiles.Length);
+            Assert.Equal("mpeg4", response.Job.InputMediaFile.Format);
+            Assert.Equal(122000, response.Job.InputMediaFile.DurationInMiliseconds);
+            Assert.Equal(2, response.Job.InputMediaFile.Channels);
+            Assert.Equal("h264", response.Job.InputMediaFile.VideoCodec);
+            Assert.Equal(1, response.Job.OutputMediaFiles.Length);
 
-            Assert.AreEqual("pcm_s16le", response.Job.InputMediaFile.AudioCodec);
-            Assert.AreEqual(25.05f, response.Job.InputMediaFile.FrameRate);
-            Assert.AreEqual(6524, response.Job.InputMediaFile.TotalBitrateInKbps);
-            Assert.AreEqual(586, response.Job.OutputMediaFiles[0].TotalBitrateInKbps);
+            Assert.Equal("pcm_s16le", response.Job.InputMediaFile.AudioCodec);
+            Assert.Equal(25.05f, response.Job.InputMediaFile.FrameRate);
+            Assert.Equal(6524, response.Job.InputMediaFile.TotalBitrateInKbps);
+            Assert.Equal(586, response.Job.OutputMediaFiles[0].TotalBitrateInKbps);
             
             // TODO: implement ability to get thumbnail element of response.
-            // Assert.AreEqual("group-label-value-1", response.Job.
+            // Assert.Equal("group-label-value-1", response.Job.
         }
 
         /// <summary>
         /// Job details request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobJobDetailsRequest()
         {
             CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
-            Assert.IsTrue(createResponse.Success);
+            Assert.True(createResponse.Success);
 
             JobDetailsResponse detailsResponse = Zencoder.JobDetails(createResponse.Id);
-            Assert.IsTrue(detailsResponse.Success);
+            Assert.True(detailsResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -453,7 +451,7 @@ namespace Zencoder.Test
                 createResponse.Id, 
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
+                    Assert.True(r.Success);
                     handles[0].Set();
                 });
 
@@ -463,7 +461,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Job progress request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobJobProgressRequest()
         {
             Output output = new Output()
@@ -475,10 +473,10 @@ namespace Zencoder.Test
             };
 
             CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", new Output[] { output });
-            Assert.IsTrue(createResponse.Success);
+            Assert.True(createResponse.Success);
 
             JobProgressResponse progressResponse = Zencoder.JobProgress(createResponse.Outputs.First().Id);
-            Assert.IsTrue(progressResponse.Success);
+            Assert.True(progressResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -486,7 +484,7 @@ namespace Zencoder.Test
                 createResponse.Outputs.First().Id,
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
+                    Assert.True(r.Success);
                     handles[0].Set();
                 });
 
@@ -496,30 +494,30 @@ namespace Zencoder.Test
         /// <summary>
         /// Job progress response from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobJobProgressResponseFromJson()
         {
             JobProgressResponse response = JobProgressResponse.FromJson(@"{""state"":""processing"",""current_event"":""Transcoding"",""progress"":""32.34567345""}");
-            Assert.AreEqual(OutputState.Processing, response.State);
-            Assert.AreEqual(OutputEvent.Transcoding, response.CurrentEvent);
-            Assert.AreEqual(32.34567345, response.Progress);
+            Assert.Equal(OutputState.Processing, response.State);
+            Assert.Equal(OutputEvent.Transcoding, response.CurrentEvent);
+            Assert.Equal(32.34567345, response.Progress);
         }
 
         /// <summary>
         /// List jobs request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobListJobsRequest()
         {
             ListJobsResponse response = Zencoder.ListJobs();
-            Assert.IsTrue(response.Success);
+            Assert.True(response.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
             Zencoder.ListJobs(
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
+                    Assert.True(r.Success);
                     handles[0].Set();
                 });
 
@@ -529,32 +527,32 @@ namespace Zencoder.Test
         /// <summary>
         /// List jobs from JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobListJobsFromJson()
         {
             ListJobsResponse response = ListJobsResponse.FromJson(ListJobsResponseJson);
-            Assert.AreEqual(1, response.Jobs.Length);
+            Assert.Equal(1, response.Jobs.Length);
 
             Job first = response.Jobs.First();
-            Assert.AreEqual(new DateTime(2010, 1, 1), first.FinishedAt);
-            Assert.AreEqual(1, first.Id);
-            Assert.AreEqual(JobState.Finished, first.State);
+            Assert.Equal(new DateTime(2010, 1, 1), first.FinishedAt);
+            Assert.Equal(1, first.Id);
+            Assert.Equal(JobState.Finished, first.State);
 
-            Assert.AreEqual("mpeg4", first.InputMediaFile.Format);
-            Assert.AreEqual(24883, first.InputMediaFile.DurationInMiliseconds);
-            Assert.AreEqual(2, first.InputMediaFile.Channels);
-            Assert.AreEqual("h264", first.InputMediaFile.VideoCodec);
-            Assert.AreEqual(1, first.OutputMediaFiles.Length);
+            Assert.Equal("mpeg4", first.InputMediaFile.Format);
+            Assert.Equal(24883, first.InputMediaFile.DurationInMiliseconds);
+            Assert.Equal(2, first.InputMediaFile.Channels);
+            Assert.Equal("h264", first.InputMediaFile.VideoCodec);
+            Assert.Equal(1, first.OutputMediaFiles.Length);
 
             OutputMediaFile output = first.OutputMediaFiles.First();
-            Assert.AreEqual(AudioCodec.Aac, output.AudioCodec);
-            Assert.AreEqual(false, output.Test);
+            Assert.Equal(AudioCodec.Aac, output.AudioCodec);
+            Assert.Equal(false, output.Test);
         }
 
         /// <summary>
         /// Nested async job request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobNestedAsyncRequests()
         {
             ManualResetEvent[] handles = new ManualResetEvent[] 
@@ -573,13 +571,13 @@ namespace Zencoder.Test
                 false,
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
+                    Assert.True(r.Success);
 
                     Zencoder.JobDetails(
                         r.Id,
                         dr =>
                         {
-                            Assert.IsTrue(dr.Success);
+                            Assert.True(dr.Success);
                             handles[0].Set();
                         });
                 });
@@ -594,8 +592,8 @@ namespace Zencoder.Test
                 false,
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
-                    Assert.IsTrue(Zencoder.JobDetails(r.Id).Success);
+                    Assert.True(r.Success);
+                    Assert.True(Zencoder.JobDetails(r.Id).Success);
                     handles[1].Set();
                 });
 
@@ -605,14 +603,14 @@ namespace Zencoder.Test
         /// <summary>
         /// Resubmit job request tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void JobResubmitJobRequest()
         {
             CreateJobResponse createResponse = Zencoder.CreateJob("s3://bucket-name/file-name.avi", null, null, null, true, false);
-            Assert.IsTrue(createResponse.Success);
+            Assert.True(createResponse.Success);
 
             ResubmitJobResponse resubmitResponse = Zencoder.ResubmitJob(createResponse.Id);
-            Assert.IsTrue(resubmitResponse.Success);
+            Assert.True(resubmitResponse.Success);
 
             AutoResetEvent[] handles = new AutoResetEvent[] { new AutoResetEvent(false) };
 
@@ -620,7 +618,7 @@ namespace Zencoder.Test
                 createResponse.Id, 
                 r =>
                 {
-                    Assert.IsTrue(r.Success);
+                    Assert.True(r.Success);
                     handles[0].Set();
                 });
 

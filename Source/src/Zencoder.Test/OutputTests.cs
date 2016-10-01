@@ -8,14 +8,12 @@ namespace Zencoder.Test
 {
     using System;
     using System.Globalization;
-    using System.Threading;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
+    using Xunit;
 
     /// <summary>
     /// Output tests.
     /// </summary>
-    [TestClass]
     public class OutputTests : TestBase
     {
         #region Access Control JSON
@@ -30,7 +28,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Output access control to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputAccessControlToJson()
         {
             Output output = new Output()
@@ -48,13 +46,13 @@ namespace Zencoder.Test
                 .WithInputUrl(new Uri("s3://bucket-name/file-name.avi"))
                 .WithOutput(output);
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, AccessControlJson, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, AccessControlJson, ApiKey), request.ToJson());
         }
 
         /// <summary>
         /// Output H264 create job tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputH264CreateJob()
         {
             Output output = new Output()
@@ -66,13 +64,13 @@ namespace Zencoder.Test
             };
 
             CreateJobResponse response = Zencoder.CreateJob("s3://bucket-name/file-name.avi", new Output[] { output });
-            Assert.IsTrue(response.Success);
+            Assert.True(response.Success);
         }
 
         /// <summary>
         /// Output H264 to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputH264ToJson()
         {
             const string Json = @"{""h264_level"":""4.1"",""h264_profile"":""high"",""h264_reference_frames"":5,""tuning"":""fastdecode""}";
@@ -85,20 +83,20 @@ namespace Zencoder.Test
                 Tuning = Tuning.FastDecode
             };
 
-            Assert.AreEqual(Json, JsonConvert.SerializeObject(output));
+            Assert.Equal(Json, JsonConvert.SerializeObject(output));
         }
 
         /// <summary>
         /// Output notification to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputNotificationToJson()
         {
-            Assert.AreEqual(
+            Assert.Equal(
                 @"{""format"":""json"",""url"":""http://user:password@tastycodes.com/zencoder1""}",
                 JsonConvert.SerializeObject(Notification.ForHttp("http://user:password@tastycodes.com/zencoder1")));
 
-            Assert.AreEqual(
+            Assert.Equal(
                 @"""admin@tastycodes.com""",
                 JsonConvert.SerializeObject(Notification.ForEmail("admin@tastycodes.com")));
 
@@ -108,7 +106,7 @@ namespace Zencoder.Test
                 Notification.ForEmail("admin@tastycodes.com")
             };
 
-            Assert.AreEqual(
+            Assert.Equal(
                 @"[{""format"":""json"",""url"":""http://user:password@tastycodes.com/zencoder2""},""admin@tastycodes.com""]",
                 JsonConvert.SerializeObject(notifications));
         }
@@ -116,7 +114,7 @@ namespace Zencoder.Test
         /// <summary>
         /// Output to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputOutputToJson()
         {
             const string One = @"{{""input"":""s3://bucket-name/file-name.avi"",""outputs"":[{{""height"":320,""label"":""iPhone"",""url"":""s3://output-bucket/output-file-1-name.mp4"",""width"":480}},{{""height"":720,""label"":""WebHD"",""url"":""s3://output-bucket/output-file-2-name.mp4"",""width"":1280}}],""api_key"":""{0}""}}";
@@ -145,13 +143,13 @@ namespace Zencoder.Test
                 Outputs = outputs
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
         }
 
         /// <summary>
         /// Output segmented streams to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputSegmentedStreamsToJson()
         {
             const string One = @"{{""input"":""http://example.com/file-name.avi"",""outputs"":[{{""segment_seconds"":30}},{{""type"":""playlist"",""streams"":[{{""bandwidth"":240,""path"":""low/index.m3u8""}},{{""bandwidth"":640,""path"":""high/index.m3u8""}}]}}],""api_key"":""{0}""}}";
@@ -185,13 +183,13 @@ namespace Zencoder.Test
                 Outputs = new Output[] { output, playlist }
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
         }
 
         /// <summary>
         /// Output thumbnails to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputThumbnailsToJson()
         {
             const string One = @"{{""input"":""http://example.com/file-name.avi"",""outputs"":[{{""thumbnails"":[{{""base_url"":""s3://bucket/directory"",""height"":120,""label"":null,""number"":6,""prefix"":""custom"",""width"":160}}]}}],""api_key"":""{0}""}}";
@@ -214,7 +212,7 @@ namespace Zencoder.Test
                 Outputs = new Output[] { output }
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
 
             thumbs = thumbs.WithIntervalInFrames(10);
             thumbs.FileName = "{{number}}_{{width}}x{{height}}-thumbnail";
@@ -222,13 +220,13 @@ namespace Zencoder.Test
 
             output.Thumbnails = new Thumbnails[] { thumbs };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, Two, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, Two, ApiKey), request.ToJson());
         }
 
         /// <summary>
         /// Output watermark to JSON tests.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void OutputWatermarkToJson()
         {
             const string One = @"{{""input"":""http://example.com/file-name.avi"",""outputs"":[{{""watermarks"":[{{""height"":""24"",""url"":""s3://bucket/watermark_file.png"",""width"":""32"",""x"":""20"",""y"":""-10%""}}]}}],""api_key"":""{0}""}}";
@@ -248,7 +246,7 @@ namespace Zencoder.Test
                 Outputs = outputs
             };
 
-            Assert.AreEqual(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
+            Assert.Equal(string.Format(CultureInfo.InvariantCulture, One, ApiKey), request.ToJson());
         }
     }
 }
