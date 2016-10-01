@@ -42,7 +42,8 @@ namespace Zencoder
             {
                 try
                 {
-                    result = Enum.Parse(objectType, str, true);
+                    var enumType = objectType.IsNullableEnum() ? Nullable.GetUnderlyingType(objectType) : objectType;
+                    result = Enum.Parse(enumType, str, true);
                 }
                 catch (ArgumentException)
                 {
